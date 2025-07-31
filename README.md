@@ -1,3 +1,31 @@
+## TWAP (Time-Weighted Average Price) Architecture for 1inch Limit Order Protocol
+
+# Adaptive TWAP Strategy
+
+An Adaptive TWAP (Time-Weighted Average Price) strategy is an onchain smart order execution system that splits large trades into smaller time-distributed chunks, with dynamic behavior based on real-time market conditions.
+
+This implementation enhances traditional TWAP logic by introducing:
+
+Volatility-aware chunk sizing
+
+Gas-aware execution deferment
+
+Chainlink oracle integrations
+
+Batched multi-order execution support for relayers
+
+The goal is to maximize execution efficiency, minimize slippage, and provide a safe and programmable experience for both users and resolvers.
+
+# Features
+
+ 1. TWAP Execution Logic.
+
+ 2. Volatility-Aware Chunk Sizing (via Chainlink).
+
+ 3. Gas-Aware Deferment
+ 
+ 4. Batched Multi-TWAP Execution
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
