@@ -108,5 +108,14 @@ interface iTypes {
         /// @dev Replaces the standard TWAP interval with a shorter safety interval to
         ///      avoid over-filling while still reacting quickly to conditions.
         bool continuousMode;
+        address volatilityOracle; // NEW: Direct volatility oracle (optional)
+        address makerAsset;
     }
+}
+
+// Add volatility oracle interface
+interface IVolatilityOracle {
+    function getVolatility(address asset) external view returns (uint256);
+    function getImpliedVolatility(address asset) external view returns (uint256);
+    function latestVolatility() external view returns (uint256);
 }

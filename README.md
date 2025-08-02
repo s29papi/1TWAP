@@ -21,10 +21,8 @@ The goal is to maximize execution efficiency, minimize slippage, and provide a s
  1. TWAP Execution Logic.
 
  2. Volatility-Aware Chunk Sizing (via Chainlink).
-
- 3. Gas-Aware Deferment
  
- 4. Batched Multi-TWAP Execution
+ 3. Batched Multi-TWAP Execution
 
 ## Foundry
 
