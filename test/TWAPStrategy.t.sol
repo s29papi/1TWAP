@@ -12,7 +12,6 @@ contract IntegrationTWAPTest is Test {
     uint256 private constant _ALLOW_MULTIPLE_FILLS_FLAG = 1 << 254;
     uint256 private constant _PRE_INTERACTION_CALL_FLAG = 1 << 252;
     uint256 private constant _POST_INTERACTION_CALL_FLAG = 1 << 251;
-    uint256 constant MAINNET_FORK_BLOCK = 364_132_477;
     string constant BASE_RPC_URL = "https://arb1.arbitrum.io/rpc";
 
     TWAPStrategy twapStrategy;
@@ -35,7 +34,7 @@ contract IntegrationTWAPTest is Test {
     function setUp() public {
         alice = vm.addr(alicePrvKey);
         bob = vm.addr(bobPrvKey);
-        vm.createSelectFork(BASE_RPC_URL, MAINNET_FORK_BLOCK);
+        vm.createSelectFork(BASE_RPC_URL);
         twapStrategy = new TWAPStrategy();
         twapStrategy.setResolverAuthorization(bob, true);
 
@@ -53,7 +52,7 @@ contract IntegrationTWAPTest is Test {
     }
 
     function test_TWAPStrategy_SingleChunk() public {
-        vm.createSelectFork(BASE_RPC_URL, MAINNET_FORK_BLOCK);
+        vm.createSelectFork(BASE_RPC_URL);
 
         // Re-deploy the strategy
         twapStrategy = new TWAPStrategy();
@@ -136,7 +135,7 @@ contract IntegrationTWAPTest is Test {
     }
 
     function test_TWAPStrategy_FullExecution() public {
-        vm.createSelectFork(BASE_RPC_URL, MAINNET_FORK_BLOCK);
+        vm.createSelectFork(BASE_RPC_URL);
 
         // Re-deploy the strategy
         twapStrategy = new TWAPStrategy();
@@ -242,7 +241,7 @@ contract IntegrationTWAPTest is Test {
     }
 
     function test_TWAPStrategy_TooEarlyToExecuteNextChunk() public {
-        vm.createSelectFork(BASE_RPC_URL, MAINNET_FORK_BLOCK);
+        vm.createSelectFork(BASE_RPC_URL);
 
         // Re-deploy the strategy
         twapStrategy = new TWAPStrategy();
@@ -308,7 +307,7 @@ contract IntegrationTWAPTest is Test {
 
     function test_TWAPStrategy_UnauthorizedResolver() public {
         // Create a fresh fork for this test
-        vm.createSelectFork(BASE_RPC_URL, MAINNET_FORK_BLOCK);
+        vm.createSelectFork(BASE_RPC_URL);
 
         // Re-deploy the strategy
         twapStrategy = new TWAPStrategy();
@@ -361,7 +360,7 @@ contract IntegrationTWAPTest is Test {
 
     function test_TWAPStrategy_ChunkTooSmall() public {
         // Create a fresh fork for this test
-        vm.createSelectFork(BASE_RPC_URL, MAINNET_FORK_BLOCK);
+        vm.createSelectFork(BASE_RPC_URL);
 
         // Re-deploy the strategy
         twapStrategy = new TWAPStrategy();
