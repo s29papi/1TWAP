@@ -12,7 +12,7 @@ contract CTWAPTestBase is Test {
     uint256 private constant _ALLOW_MULTIPLE_FILLS_FLAG = 1 << 254;
     uint256 private constant _PRE_INTERACTION_CALL_FLAG = 1 << 252;
     uint256 private constant _POST_INTERACTION_CALL_FLAG = 1 << 251;
-    
+
     // Base Mainnet Configuration
     uint256 constant BASE_FORK_BLOCK = 24_000_000; // Update with recent block
     string constant BASE_RPC_URL = "https://mainnet.base.org"; // Or use your preferred RPC
@@ -102,7 +102,8 @@ contract CTWAPTestBase is Test {
     }
 
     function _makerTraitsWithExtension() internal pure returns (uint256) {
-        return _HAS_EXTENSION_FLAG | _ALLOW_MULTIPLE_FILLS_FLAG | _PRE_INTERACTION_CALL_FLAG | _POST_INTERACTION_CALL_FLAG;
+        return
+            _HAS_EXTENSION_FLAG | _ALLOW_MULTIPLE_FILLS_FLAG | _PRE_INTERACTION_CALL_FLAG | _POST_INTERACTION_CALL_FLAG;
     }
 
     function _takerTraitsForExtension(bytes memory extension) internal pure returns (uint256) {
@@ -184,15 +185,14 @@ contract CTWAPTestBase is Test {
         );
 
         bytes32 orderHash = oneLOP.hashOrder(order);
-        
+
         // Execute first chunk
         vm.prank(bob);
-        (uint256 makingAmount, uint256 takingAmount,) = oneLOP.fillOrderArgs(
-            order, r, vs, totalMaking / numChunks, _takerTraitsForExtension(extension), extension
-        );
+        (uint256 makingAmount, uint256 takingAmount,) =
+            oneLOP.fillOrderArgs(order, r, vs, totalMaking / numChunks, _takerTraitsForExtension(extension), extension);
 
         assertEq(makingAmount, totalMaking / numChunks, "First chunk should execute correctly");
-        
+
         (uint256 executedChunks,,,) = cTWAPStrategy.twapStates(orderHash);
         assertEq(executedChunks, 1, "Should have executed 1 chunk");
 
@@ -233,7 +233,7 @@ contract CTWAPTestBase is Test {
         );
 
         bytes32 orderHash = oneLOP.hashOrder(order);
-        
+
         // Check volatility is calculated
         uint256 volatility = cTWAPStrategy.getCurrentVolatility(orderHash);
         console.log("Current ETH volatility on Base (bps):", volatility);
@@ -242,7 +242,7 @@ contract CTWAPTestBase is Test {
         // Check if can execute based on volatility
         (bool canExecute, string memory reason) = cTWAPStrategy.canExecuteVolatilityChunk(orderHash);
         console.log("Can execute:", canExecute, "Reason:", reason);
-        
+
         console.log("Base volatility calculation works");
     }
 
@@ -269,7 +269,7 @@ contract CTWAPTestBase is Test {
                     maxPriceImpact: 300
                 }),
                 volatilityEnabled: true,
-                minVolatility: 50,    // Lower vol for staked ETH
+                minVolatility: 50, // Lower vol for staked ETH
                 maxVolatility: 10000, // 100% max
                 volatilityWindow: 3600,
                 priceOracle: cbETH_USD_ORACLE,
@@ -287,9 +287,8 @@ contract CTWAPTestBase is Test {
 
         // Execute first chunk
         vm.prank(bob);
-        (uint256 makingAmount,,) = oneLOP.fillOrderArgs(
-            order, r, vs, chunkSize, _takerTraitsForExtension(extension), extension
-        );
+        (uint256 makingAmount,,) =
+            oneLOP.fillOrderArgs(order, r, vs, chunkSize, _takerTraitsForExtension(extension), extension);
 
         assertEq(makingAmount, chunkSize, "cbETH chunk should execute");
         console.log("Base-specific cbETH TWAP works correctly");
@@ -300,7 +299,7 @@ contract CTWAPTestBase is Test {
         console.log("=== Test 4: Base DAI/USDC Stable TWAP ===");
 
         uint256 totalMaking = 10_000 * 1e18; // 10k DAI
-        uint256 totalTaking = 10_000 * 1e6;  // 10k USDC
+        uint256 totalTaking = 10_000 * 1e6; // 10k USDC
 
         (ILimitOrderProtocol.Order memory order, bytes32 r, bytes32 vs, bytes memory extension) = _createCTWAPOrder(
             DAI,
@@ -335,11 +334,10 @@ contract CTWAPTestBase is Test {
         uint256 chunkSize = totalMaking / 10;
         for (uint256 i = 0; i < 3; i++) {
             vm.prank(bob);
-            (uint256 makingAmount,,) = oneLOP.fillOrderArgs(
-                order, r, vs, chunkSize, _takerTraitsForExtension(extension), extension
-            );
+            (uint256 makingAmount,,) =
+                oneLOP.fillOrderArgs(order, r, vs, chunkSize, _takerTraitsForExtension(extension), extension);
             assertEq(makingAmount, chunkSize, "Stable chunk should execute");
-            
+
             if (i < 2) {
                 vm.warp(block.timestamp + 61); // Min interval in continuous mode
             }
@@ -385,9 +383,8 @@ contract CTWAPTestBase is Test {
 
         // If sequencer is up, execution should work
         vm.prank(bob);
-        (uint256 makingAmount,,) = oneLOP.fillOrderArgs(
-            order, r, vs, 1 ether, _takerTraitsForExtension(extension), extension
-        );
+        (uint256 makingAmount,,) =
+            oneLOP.fillOrderArgs(order, r, vs, 1 ether, _takerTraitsForExtension(extension), extension);
 
         assertGt(makingAmount, 0, "Should execute when sequencer is up");
         console.log("Base sequencer check integration verified");
@@ -441,13 +438,13 @@ contract CTWAPTestBase is Test {
         );
 
         bytes32 orderHash = oneLOP.hashOrder(order);
-        
+
         // Check initial balances
         uint256 aliceUSDCBefore = IERC20(USDC).balanceOf(alice);
         uint256 aliceWETHBefore = IERC20(WETH).balanceOf(alice);
         uint256 bobUSDCBefore = IERC20(USDC).balanceOf(bob);
         uint256 bobWETHBefore = IERC20(WETH).balanceOf(bob);
-        
+
         console.log("Alice USDC before:", aliceUSDCBefore / 1e6, "USDC");
         console.log("Alice WETH before:", aliceWETHBefore / 1e18, "WETH");
         console.log("Bob USDC before:", bobUSDCBefore / 1e6, "USDC");
@@ -459,9 +456,8 @@ contract CTWAPTestBase is Test {
 
         // Execute the swap
         vm.prank(bob);
-        (uint256 makingAmount, uint256 takingAmount,) = oneLOP.fillOrderArgs(
-            order, r, vs, totalMakingUSDC, _takerTraitsForExtension(extension), extension
-        );
+        (uint256 makingAmount, uint256 takingAmount,) =
+            oneLOP.fillOrderArgs(order, r, vs, totalMakingUSDC, _takerTraitsForExtension(extension), extension);
 
         console.log("Executed - Making (USDC):", makingAmount / 1e6, "Taking (WETH):", takingAmount);
 

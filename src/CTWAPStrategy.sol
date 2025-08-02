@@ -10,7 +10,7 @@ import "./interface/i1inch.sol";
 
 contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
     using SafeERC20 for IERC20;
-    
+
     // Constants
     uint256 private constant VOLATILITY_PRECISION = 10_000;
     uint256 private constant MIN_EXECUTION_INTERVAL = 60;
@@ -19,7 +19,7 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
 
     // Modified struct - remove historical tracking
     struct VolatilityData {
-        address volatilityOracle;  // Direct volatility oracle address
+        address volatilityOracle; // Direct volatility oracle address
         uint8 priceOracleDecimals; // Still need for price impact checks
         uint256 lastKnownVolatility; // Cache last known value
         uint256 lastUpdateTime;
@@ -66,14 +66,14 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
         // Volatility-mode-specific validation
         if (params.volatilityEnabled) {
             if (params.maxVolatility <= params.minVolatility) revert InvalidParameters();
-            
+
             // For real-time volatility, we need either:
             // 1. A dedicated volatility oracle (preferred)
             // 2. A price oracle from which we can derive instant volatility
             if (params.priceOracle == address(0) && params.volatilityOracle == address(0)) {
                 revert InvalidParameters();
             }
-            
+
             if (params.maxPriceStaleness == 0) revert InvalidParameters();
 
             // If using price oracle, cache its decimals
@@ -126,9 +126,7 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
 
         // Enforce spacing between chunks
         if (!params.continuousMode && state.executedChunks > 0) {
-            uint256 interval = params.volatilityEnabled
-                ? MIN_EXECUTION_INTERVAL
-                : params.baseParams.chunkInterval;
+            uint256 interval = params.volatilityEnabled ? MIN_EXECUTION_INTERVAL : params.baseParams.chunkInterval;
 
             if (block.timestamp < state.lastExecutionTime + interval) {
                 revert TooEarlyToExecute();
@@ -144,7 +142,7 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
 
             // Get real-time volatility
             uint256 currentVol = _getRealTimeVolatility(orderHash, params);
-            
+
             // Update cache
             volatilityData[orderHash].lastKnownVolatility = currentVol;
             volatilityData[orderHash].lastUpdateTime = block.timestamp;
@@ -162,11 +160,7 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
 
         // Chunk sizing with volatility adjustment
         uint256 expectedChunkSize = _calculateVolatilityAdjustedChunkSize(
-            orderHash,
-            order.makingAmount,
-            params,
-            state.executedChunks,
-            volatilityData[orderHash].lastKnownVolatility
+            orderHash, order.makingAmount, params, state.executedChunks, volatilityData[orderHash].lastKnownVolatility
         );
 
         if (makingAmount < params.baseParams.minChunkSize && makingAmount < expectedChunkSize) {
@@ -178,7 +172,7 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
             uint256 expectedTakingForChunk = (order.takingAmount * makingAmount) / order.makingAmount;
             uint256 actualTaking = takingAmount > 0 ? takingAmount : expectedTakingForChunk;
             uint256 impactBps = calculatePriceImpact(expectedTakingForChunk, actualTaking);
-            
+
             if (impactBps > params.baseParams.maxPriceImpact) {
                 revert PriceImpactTooHigh();
             }
@@ -219,14 +213,16 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
     // Get real-time volatility from oracle or calculate instant volatility
     function _getRealTimeVolatility(bytes32 orderHash, CTWAPParams memory params) internal view returns (uint256) {
         VolatilityData memory volData = volatilityData[orderHash];
-        
+
         // Option 1: Use dedicated volatility oracle if available
         if (volData.volatilityOracle != address(0)) {
             try IVolatilityOracle(volData.volatilityOracle).latestVolatility() returns (uint256 vol) {
                 // Convert to basis points if needed
                 return vol;
             } catch {
-                try IVolatilityOracle(volData.volatilityOracle).getImpliedVolatility(params.makerAsset) returns (uint256 vol) {
+                try IVolatilityOracle(volData.volatilityOracle).getImpliedVolatility(params.makerAsset) returns (
+                    uint256 vol
+                ) {
                     return vol;
                 } catch {
                     // Fallback to instant volatility calculation
@@ -246,7 +242,8 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
     // Calculate instant volatility from recent price movements
     function _calculateInstantVolatility(address priceOracle, uint8 decimals) internal view returns (uint256) {
         // Get current price
-        (uint80 currentRoundId, int256 currentPrice,, uint256 currentTime,) = AggregatorV3Interface(priceOracle).latestRoundData();
+        (uint80 currentRoundId, int256 currentPrice,, uint256 currentTime,) =
+            AggregatorV3Interface(priceOracle).latestRoundData();
         if (currentPrice <= 0) revert InvalidPriceFeed();
 
         // Try to get previous round for instant calculation
@@ -268,10 +265,10 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
                 uint256 normalizedPrev = _normalizePrice(uint256(prevPrice), decimals);
 
                 // Calculate absolute return with higher precision
-                uint256 priceDiff = normalizedCurrent > normalizedPrev 
+                uint256 priceDiff = normalizedCurrent > normalizedPrev
                     ? normalizedCurrent - normalizedPrev
                     : normalizedPrev - normalizedCurrent;
-                
+
                 // If price hasn't changed much, calculate based on typical volatility
                 if (priceDiff == 0 || (priceDiff * FIXED_POINT_DECIMALS) / normalizedPrev < 1e14) {
                     // Price moved less than 0.01%, use historical average volatility
@@ -285,7 +282,7 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
                 // Annualize based on the time between updates
                 // Most Chainlink feeds update every hour (3600 seconds)
                 uint256 periodsPerYear = 365 days / timeDiff;
-                
+
                 // Apply square root of periods for annualization
                 // This is a simplified calculation: annualized_vol = return * sqrt(periods_per_year)
                 uint256 sqrtPeriods = _sqrt(periodsPerYear);
@@ -293,18 +290,18 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
 
                 // Convert to basis points (multiply by 10000 and divide by 1e18)
                 uint256 volBps = (annualizedVol * VOLATILITY_PRECISION) / FIXED_POINT_DECIMALS;
-                
+
                 // Ensure reasonable bounds (1% to 500%)
                 if (volBps < 100) return 100;
                 if (volBps > 50000) return 50000;
-                
+
                 return volBps;
             } catch {
                 // If getRoundData fails, return default
                 return 6000; // 60% default volatility for crypto
             }
         }
-        
+
         // If no previous round available
         return 6000; // 60% default volatility for crypto
     }
@@ -342,7 +339,7 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
     function getCurrentVolatility(bytes32 orderHash) external view returns (uint256) {
         CTWAPParams memory params = cTwapParams[orderHash];
         if (!params.volatilityEnabled) return 0;
-        
+
         // Try to get fresh volatility
         try this.getRealTimeVolatility(orderHash, params) returns (uint256 vol) {
             return vol;
@@ -351,7 +348,7 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
             return volatilityData[orderHash].lastKnownVolatility;
         }
     }
-    
+
     // Public wrapper for external calls
     function getRealTimeVolatility(bytes32 orderHash, CTWAPParams memory params) public view returns (uint256) {
         return _getRealTimeVolatility(orderHash, params);
@@ -423,7 +420,9 @@ contract CTWAPStrategy is iTypes, Ownable, IPreInteraction, IPostInteraction {
     }
 
     function calculateChunkSize(uint256 totalAmount, uint256 totalChunks, uint256 executedChunks)
-        public pure returns (uint256)
+        public
+        pure
+        returns (uint256)
     {
         uint256 remainingChunks = totalChunks - executedChunks;
         if (remainingChunks == 0) return 0;
