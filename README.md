@@ -1,14 +1,14 @@
 ## TWAP (Time-Weighted Average Price) Architecture for 1inch Limit Order Protocol
 
-# Adaptive TWAP Strategy
+# Adaptive TWAP Strategy / Continous Time-Weighted Average Price
 
-An Adaptive TWAP (Time-Weighted Average Price) strategy is an onchain smart order execution system that splits large trades into smaller time-distributed chunks, with dynamic behavior based on real-time market conditions.
+CTWAPStrategy extends 1inch Limit Order Protocol with a volatility-aware TWAP: it schedules chunked execution, gates fills with Chainlink-based realized volatility and price-feed safety checks, enforces price-impact ceilings, and adaptively sizes chunks—fully on-chain, no official API required
+
+
 
 This implementation enhances traditional TWAP logic by introducing:
 
 Volatility-aware chunk sizing
-
-Gas-aware execution deferment
 
 Chainlink oracle integrations
 
