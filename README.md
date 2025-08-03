@@ -1,28 +1,29 @@
-## TWAP (Time-Weighted Average Price) Architecture for 1inch Limit Order Protocol
+# Continuous Time-Weighted Average Price (CTWAPStrategy)
+CTWAPStrategy is an advanced on-chain strategy that extends the 1inch Limit Order Protocol with volatility-aware TWAP execution—all without relying on the official 1inch API.
 
-# Adaptive TWAP Strategy / Continous Time-Weighted Average Price
+It automates chunked order execution, dynamically sizes each chunk based on market volatility (using Chainlink oracles), enforces robust price-impact protections, and continuously validates price feeds for safety. All strategy logic runs fully on-chain and can be used by anyone building or settling limit orders.
 
-CTWAPStrategy extends 1inch Limit Order Protocol with a volatility-aware TWAP: it schedules chunked execution, gates fills with Chainlink-based realized volatility and price-feed safety checks, enforces price-impact ceilings, and adaptively sizes chunks—fully on-chain, no official API required
+## Key Features
+TWAP Execution:
+Schedule and execute large trades as smaller “chunks” over time to minimize market impact.
 
+Volatility-Aware Chunk Sizing:
+Each chunk’s size is adaptively calculated using realized volatility derived from Chainlink oracles, reducing risk during turbulent market conditions.
 
+On-Chain Oracle Integration:
+Integrates Chainlink price feeds for real-time market data and robust price-feed safety checks.
 
-This implementation enhances traditional TWAP logic by introducing:
+Price Impact Protections:
+Ensures no single chunk execution exceeds user-defined slippage or price impact ceilings.
 
-Volatility-aware chunk sizing
+No Official API Required:
+Works natively with 1inch Limit Order Protocol smart contracts—no need for off-chain coordination or the 1inch API.
 
-Chainlink oracle integrations
+Programmable & Secure:
+Provides a highly customizable and programmable TWAP interface for power users, market makers, and resolvers.
 
-Batched multi-order execution support for relayers
-
-The goal is to maximize execution efficiency, minimize slippage, and provide a safe and programmable experience for both users and resolvers.
-
-# Features
-
- 1. TWAP Execution Logic.
-
- 2. Volatility-Aware Chunk Sizing (via Chainlink).
- 
- 3. Batched Multi-TWAP Execution
+## Why CTWAPStrategy?
+By combining time-weighted execution with on-chain volatility and safety checks, CTWAPStrategy aims to maximize execution efficiency and provide a transparent, programmable, and safer experience for both users and resolvers.
 
 ## Foundry
 
