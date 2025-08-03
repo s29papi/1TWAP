@@ -1,0 +1,41 @@
+No files changed, compilation skipped
+Warning: Detected artifacts built from source files that no longer exist. Run `forge clean` to make sure builds are in sync with project files.
+ - /home/usih/go/src/github.com/s29papi/1Twap/src/cTWAPStrategy.sol
+Script ran successfully.
+
+== Logs ==
+  ORDER_CREATED=true
+  ORDER_HASH= 0x5c4d1694f9dbe140cf7654ad4359cbe5ce33a922bea6447b8e800b70a2a48edf
+  ORDER_SALT= 2563821205144808283691605253878973627986886068535306180305
+  ORDER_R= 0x221d2ae573a597b2a1c255f69bdfca264e1acdd6d15f9dee2a979a06967e6a29
+  ORDER_VS= 0x17750d3659f5bd0e15754bf51d8abbcf82c98ca2cfd16a6cfa9e7674733902de
+  MAKER_ADDRESS= 0x330cA32b71b81Ea2b1D3a5C391C5cFB6520E0A10
+  MAKING_AMOUNT= 1000000
+  TAKING_AMOUNT= 286388824373576
+  TOTAL_CHUNKS= 2
+  CHUNK_INTERVAL= 20
+  EXTENSION_LENGTH= 72
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 8453
+
+Estimated gas price: 0.002071152 gwei
+
+Estimated total gas used for script: 577231
+
+Estimated amount required: 0.000001195533140112 ETH
+
+==========================
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+
+Transactions saved to: /home/usih/go/src/github.com/s29papi/1Twap/broadcast/deploy.s.sol/8453/run-latest.json
+
+Sensitive values saved to: /home/usih/go/src/github.com/s29papi/1Twap/cache/deploy.s.sol/8453/run-latest.json
+

@@ -1,0 +1,45 @@
+No files changed, compilation skipped
+Warning: Detected artifacts built from source files that no longer exist. Run `forge clean` to make sure builds are in sync with project files.
+ - /home/usih/go/src/github.com/s29papi/1Twap/src/cTWAPStrategy.sol
+Script ran successfully.
+
+== Logs ==
+  
+=== Executing Chunk 2 of 2 ====
+  Can execute: true
+  Before chunk:
+    USDC: 8 USDC
+    WETH: 3 finney
+  
+Chunk filled successfully!
+    Making amount: 0 USDC
+    Taking amount: 0 finney
+  CHUNK_EXECUTED=true
+  
+After chunk:
+    USDC: 8 USDC
+    WETH: 3 finney
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 8453
+
+Estimated gas price: 0.001588722 gwei
+
+Estimated total gas used for script: 291664
+
+Estimated amount required: 0.000000463373013408 ETH
+
+==========================
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+
+Transactions saved to: /home/usih/go/src/github.com/s29papi/1Twap/broadcast/deploy.s.sol/8453/run-latest.json
+
+Sensitive values saved to: /home/usih/go/src/github.com/s29papi/1Twap/cache/deploy.s.sol/8453/run-latest.json
+

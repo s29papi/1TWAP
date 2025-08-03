@@ -1,0 +1,8 @@
+export ORDER_HASH=
+export ORDER_SALT=
+export ORDER_R=
+export ORDER_VS=
+export MAKER_ADDRESS=
+export MAKING_AMOUNT=
+export TAKING_AMOUNT=
+export TOTAL_CHUNKS=2
